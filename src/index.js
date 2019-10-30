@@ -5,7 +5,7 @@ const Task = require('./model/task');//same
 
 const app = express();  //invoking a function
 const port = process.env.PORT || 3000;//creating a port(specific ports view specific webpages)
- app.use(express.json());
+ app.use(express.json());  //we are using express to format anything in the port
  app.post('/users', (req, res) => { //request...response
      const user = new User(req.body);//
      user.save().then(() => {
@@ -34,6 +34,25 @@ const port = process.env.PORT || 3000;//creating a port(specific ports view spec
          res.status(500).send();
      });
  });
- app.listen(port, () => {
-     console.log('Server is up on port' + port);
- });
+ 
+app.post('/task', (req, res) => {
+    Task.find({}).then((tasks) => {
+        res.send(tasks);
+    }).catch((e) => {
+        res.status(500).send();
+    });
+});
+
+app.get('/tasks/:id', (req, res) => {
+    const _id = req.params.id;
+    Task.findById(_id).then((task) => {
+        if (!task) {
+            return res.status(404).send();
+        }
+    }).catch((e) => {
+        res.status(500).send();
+    });
+})
+app.listen(port, () => {
+    console.log('Server is up on port' + port);
+});
